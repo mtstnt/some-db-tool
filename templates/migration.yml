@@ -1,0 +1,6 @@
+action: create
+tables:
+  user:
+    id: integer pk auto_increment
+    name: string(255) not_null
+    

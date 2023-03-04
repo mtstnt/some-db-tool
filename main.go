@@ -17,9 +17,11 @@ func main() {
 }
 
 func run() error {
-	if err := config.LoadGlobals(); err != nil {
+	globalInfo, err := config.LoadGlobals()
+	if err != nil {
 		return err
 	}
+
 	app := &cli.App{
 		Name:  "mog",
 		Usage: "Generate and do database migrations with simple tooling.",
@@ -28,9 +30,9 @@ func run() error {
 			return nil
 		},
 		Commands: []*cli.Command{
-			commands.InitCommand(),
-			commands.MigrateCommand(),
-			commands.NewCommand(),
+			commands.InitCommand(&globalInfo),
+			commands.MigrateCommand(&globalInfo),
+			commands.NewCommand(&globalInfo),
 		},
 	}
 

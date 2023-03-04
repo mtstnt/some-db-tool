@@ -14,12 +14,14 @@ var (
 	templateFilename string = "mog.config.yml"
 )
 
-func InitCommand() *cli.Command {
+func InitCommand(conf *config.GlobalInfo) *cli.Command {
 	cmd := &cli.Command{
-		Name:   "init",
-		Usage:  "Generates the mog.config.yml file and `mog` directory.",
-		Flags:  initFlags(),
-		Action: initAction,
+		Name:  "init",
+		Usage: "Generates the mog.config.yml file and `mog` directory.",
+		Flags: initFlags(),
+		Action: func(ctx *cli.Context) error {
+			return initAction(ctx, conf)
+		},
 	}
 	return cmd
 }
@@ -33,16 +35,16 @@ func initFlags() []cli.Flag {
 	}
 }
 
-func initAction(ctx *cli.Context) error {
-	path := config.CurrentPath
+func initAction(ctx *cli.Context, conf *config.GlobalInfo) error {
+	path := conf.CurrentPath
 
 	pathFlag := ctx.String("path")
 	if pathFlag != "" {
-		path = config.CurrentPath + pathFlag
+		path = conf.CurrentPath + pathFlag
 	}
 
 	configDstPath := filepath.Join(path, templateFilename)
-	configSrcPath := filepath.Join(config.ExecutablePath, "templates", templateFilename)
+	configSrcPath := filepath.Join(conf.ExecutablePath, "templates", templateFilename)
 
 	newFilePtr, err := os.Create(configDstPath)
 	if err != nil {

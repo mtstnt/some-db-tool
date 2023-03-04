@@ -5,3 +5,6 @@ database:
     name: testdb
     user: root
     password: 123456 # Use ENV_[YOUR ENVIRONMENT VARIABLE NAME] to load from environment variables.
+
+project:
+    migration_dir: ./migrations

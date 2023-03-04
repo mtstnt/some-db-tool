@@ -5,25 +5,28 @@ import (
 	"path/filepath"
 )
 
-var (
+type GlobalInfo struct {
 	ExecutablePath string
 	CurrentPath    string
-)
+}
 
 // Loads all configurations.
-func LoadGlobals() error {
+func LoadGlobals() (GlobalInfo, error) {
 	var err error
 
 	executablePath, err := os.Executable()
 	if err != nil {
-		return err
+		return GlobalInfo{}, err
 	}
-	ExecutablePath = filepath.Join(executablePath, "..")
+	executablePath = filepath.Join(executablePath, "..")
 
-	CurrentPath, err = os.Getwd()
+	currentPath, err := os.Getwd()
 	if err != nil {
-		return err
+		return GlobalInfo{}, err
 	}
 
-	return nil
+	return GlobalInfo{
+		ExecutablePath: executablePath,
+		CurrentPath:    currentPath,
+	}, nil
 }
