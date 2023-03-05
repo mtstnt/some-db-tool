@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/gobeam/stringy"
 	"github.com/mtstnt/mog/config"
 	"github.com/urfave/cli/v2"
 )
@@ -44,10 +45,23 @@ func newAction(ctx *cli.Context, conf *config.GlobalInfo) error {
 		migrationDir = filepath.Join(conf.CurrentPath, "migrations")
 	}
 
-	migrationComplete := fmt.Sprintf("%d_%s.yml", time.Now().Unix(), migrationName)
+	currentTime := time.Now()
+
+	migrationProcessedFilename := fmt.Sprintf(
+		"%d_%02d%02d%d_%s.yml",
+		currentTime.Unix(),
+		currentTime.Day(),
+		currentTime.Month(),
+		currentTime.Year(),
+		stringy.New(migrationName).SnakeCase().ToLower(),
+	)
+
+	if err := os.MkdirAll(migrationDir, os.ModeDir); err != nil {
+		return fmt.Errorf("newAction: err mkdir migrations dir: %w", err)
+	}
 
 	{
-		migrationFilename := filepath.Join(conf.CurrentPath, migrationDir, migrationComplete)
+		migrationFilename := filepath.Join(conf.CurrentPath, migrationDir, migrationProcessedFilename)
 		fptr, err := os.Create(migrationFilename)
 		if err != nil {
 			return fmt.Errorf("newAction: error creating file %s: %w", migrationFilename, err)
